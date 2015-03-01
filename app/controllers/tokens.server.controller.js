@@ -32,9 +32,6 @@ exports.create = function(req, res) {
  * Show the current token
  */
 exports.read = function(req, res) {
-console.log(req);
-console.log('------(req.token)-----------');
-console.log(req.token);
 	res.jsonp(req.token);
 };
 
