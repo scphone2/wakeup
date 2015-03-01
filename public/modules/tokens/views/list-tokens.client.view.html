@@ -1,0 +1,18 @@
+<section data-ng-controller="TokensController" data-ng-init="find()">
+	<div class="page-header">
+		<h1>Tokens</h1>
+	</div>
+	<div class="list-group">
+		<a data-ng-repeat="token in tokens" data-ng-href="#!/tokens/{{token._id}}" class="list-group-item">
+			<small class="list-group-item-text">
+				Posted on
+				<span data-ng-bind="token.created | date:'mediumDate'"></span>
+			</small>
+			<h4 class="list-group-item-heading" data-ng-bind="token.account"></h4>
+			<p class="list-group-item-text" data-ng-bind="token.device"></p>
+		</a>
+	</div>
+	<div class="alert alert-warning text-center" data-ng-if="tokens.$resolved && !tokens.length">
+		No tokens yet, why don't you <a href="/#!/tokens/create">create one</a>?
+	</div>
+</section>

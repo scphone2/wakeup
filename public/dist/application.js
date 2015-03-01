@@ -44,6 +44,10 @@ angular.element(document).ready(function() {
 'use strict';
 
 // Use Applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('tokens');
+'use strict';
+
+// Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('articles');
 'use strict';
 
@@ -53,6 +57,115 @@ ApplicationConfiguration.registerModule('core');
 
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');
+
+'use strict';
+
+// Configuring the Tokens module
+angular.module('tokens').run(['Menus',
+	function(Menus) {
+		// Set top bar menu items
+		Menus.addMenuItem('topbar', 'Tokens', 'tokens', 'dropdown', '/tokens(/create)?');
+		Menus.addSubMenuItem('topbar', 'tokens', 'List Tokens', 'tokens');
+		Menus.addSubMenuItem('topbar', 'tokens', 'New Token', 'tokens/create');
+	}
+]);
+'use strict';
+
+// Setting up route
+angular.module('tokens').config(['$stateProvider',
+	function($stateProvider) {
+		// Articles state routing
+		$stateProvider.
+		state('listTokens', {
+			url: '/tokens',
+			templateUrl: 'modules/tokens/views/list-tokens.client.view.html'
+		}).
+		state('createToken', {
+			url: '/tokens/create',
+			templateUrl: 'modules/articles/views/create-token.client.view.html'
+		}).
+		state('viewToken', {
+			url: '/tokens/:tokenId',
+			templateUrl: 'modules/articles/views/view-token.client.view.html'
+		}).
+		state('editToken', {
+			url: '/tokens/:tokenId/edit',
+			templateUrl: 'modules/tokens/views/edit-token.client.view.html'
+		});
+	}
+]);
+
+'use strict';
+
+angular.module('tokens').controller('TokensController', ['$scope', '$stateParams', '$location', 'Tokens',
+	function($scope, $stateParams, $location, Tokens) {
+
+		$scope.create = function() {
+			var token = new Tokens({
+				account: this.account,
+				device: this.device
+			});
+			device.$save(function(response) {
+				$location.path('tokens/' + response._id);
+
+				$scope.account = '';
+				$scope.device= '';
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		$scope.remove = function(token) {
+			if (token) {
+				token.$remove();
+
+				for (var i in $scope.tokens) {
+					if ($scope.tokens[i] === token) {
+						$scope.tokens.splice(i, 1);
+					}
+				}
+			} else {
+				$scope.token.$remove(function() {
+					$location.path('tokens');
+				});
+			}
+		};
+
+		$scope.update = function() {
+			var token = $scope.token;
+
+			token.$update(function() {
+				$location.path('tokens/' + token._id);
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		$scope.find = function() {
+			$scope.tokens = Tokens.query();
+		};
+
+		$scope.findOne = function() {
+			$scope.token = Tokens.get({
+				tokenId: $stateParams.tokenId
+			});
+		};
+	}
+]);
+'use strict';
+
+//Tokens service used for communicating with the tokens REST endpoints
+angular.module('tokens').factory('Tokens', ['$resource',
+	function($resource) {
+		return $resource('tokens/:tokenId', {
+			tokenId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
+			}
+		});
+	}
+]);
 
 'use strict';
 

@@ -9,26 +9,23 @@ var mongoose = require('mongoose'),
 /**
  * Article Schema
  */
-var ArticleSchema = new Schema({
+var TokenSchema = new Schema({
 	created: {
 		type: Date,
 		default: Date.now
 	},
-	title: {
+	account: {
 		type: String,
 		default: '',
 		trim: true,
-		required: 'Title cannot be blank'
+		required: 'Account cannot be blank'
 	},
-	content: {
+	device: {
 		type: String,
 		default: '',
-		trim: true
-	},
-	user: {
-		type: Schema.ObjectId,
-		ref: 'User'
+		trim: true,
+		required: 'Device cannot be blank'
 	}
 });
 
-mongoose.model('Article', ArticleSchema);
+mongoose.model('Token', TokenSchema);
