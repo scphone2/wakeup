@@ -5,6 +5,8 @@
  */
 var mongoose = require('mongoose'),
 	errorHandler = require('./errors'),
+	apn = require('apn'),
+	apnConnection = new apn.Connection({production: true}),
 	Phonecall = mongoose.model('Phonecall'),
 	Token = mongoose.model('Token'),
 	_ = require('lodash');
@@ -28,10 +30,28 @@ exports.create = function(req, res) {
 					return res.status(400).send({message: errMsg});
 				}
 				else {
-					console.log('submit reuqest to APNS for: ' + token);
+					Phonecall.find({'token':token._id}).count().exec(function(err,badgeCount) {
+						console.log('submit request to APNS for: ' + token.device);
+						console.log('badge count will be: ' + badgeCount);
+						var myDevice = new apn.Device(token.device);
+						var note = new apn.Notification();
+						note.expiry = Math.floor(Date.now() / 1000) + 360000; //100 hrs
+						note.badge = badgeCount;
+						note.sound = 'v120.caf';
+						//note.alert.actions = [{'id': 'kCloseAction', 'title': 'Ignore'},
+//							{'id': 'kViewAction', 'title': 'Display'}];
+						if (badgeCount === 1) {
+							note.alert= 'You missed a call';
+						} else {
+							note.alert= 'You missed ' + badgeCount + ' calls';
+						}
+						note.payload = {'missedCalls': badgeCount};
+						apnConnection.pushNotification(note, myDevice);
+					});
 				}
 			}); // .save
 		}); // .forEach
+		
 		return res.status(200).send({ message: 'Sent wakeup to devices for: ' + account});
 	}); // .find
 }; // .create

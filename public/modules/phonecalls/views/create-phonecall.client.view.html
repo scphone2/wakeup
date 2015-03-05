@@ -1,0 +1,35 @@
+<section data-ng-controller="PhonecallsController">
+	<div class="page-header">
+		<h1>New Phonecall</h1>
+	</div>
+	<div class="col-md-12">
+		<form name="phonecallForm" class="form-horizontal" data-ng-submit="create()" novalidate>
+			<fieldset>
+				<div class="form-group">
+					<label class="control-label" for=""account>Account Target</label>
+					<div class="controls">
+						<input name="account" type="text" data-ng-model="account" id="account" class="form-control" placeholder="SC-Account" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label" for="from">From</label>
+					<div class="controls">
+						<input name="from" type="text" data-ng-model="from" id="from" class="form-control" placeholder="Account-or-Number" required>
+					</div>
+				</div>
+				<div class="form-group" ng-class="{ 'has-error': phonecallForm.media.$dirty && phonecallForm.media.$invalid }">
+					<label class="control-label" for="media">Media</label>
+					<div class="controls">
+						<textarea name="media" data-ng-model="media" id="media" class="form-control" cols="10" rows="1" placeholder="audio"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<input type="submit" class="btn btn-default">
+				</div>
+				<div data-ng-show="error" class="text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</section>
